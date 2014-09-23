@@ -154,11 +154,12 @@ if(NOT ROOT_RELEASE)
 
    set(_srcs src/const.cpp)
    if("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "(x86|AMD64)")
-
       list(APPEND _srcs src/cpuid.cpp src/support_x86.cpp)
       vc_compile_for_all_implementations(_srcs src/trigonometric.cpp ONLY SSE2 SSE3 SSSE3 SSE4_1 AVX SSE+XOP+FMA4 AVX+XOP+FMA4 AVX+XOP+FMA AVX+FMA)# AVX2+FMA+BMI2)
       vc_compile_for_all_implementations(_srcs src/sse_sorthelper.cpp ONLY SSE2 SSE4_1 AVX AVX2+FMA+BMI2)
       vc_compile_for_all_implementations(_srcs src/avx_sorthelper.cpp ONLY AVX AVX2+FMA+BMI2)
+   elseif("${CMAKE_SYSTEM_PROCESSOR}" MATCHES "arm")
+      list(APPEND _srcs src/support_arm.cpp)
    else()
       message(FATAL_ERROR "Unsupported target architecture '${CMAKE_SYSTEM_PROCESSOR}'. No support_???.cpp file exists for this architecture.")
    endif()
