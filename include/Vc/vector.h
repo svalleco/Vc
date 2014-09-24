@@ -244,6 +244,7 @@ constexpr std::size_t MemoryAlignment = alignof(MemoryAlignedBase);
 # include "mic/simd_cast_caller.tcc"
 #endif
 #if defined(VC_IMPL_NEON)
+# include "neon/helperimpl.h"
 # include "neon/math.h"
 # include "neon/simd_cast_caller.tcc"
 #endif
@@ -268,6 +269,7 @@ namespace std
   using Vc::min;
   using Vc::max;
 
+  /*
   using Vc::abs;
   using Vc::asin;
   using Vc::atan;
@@ -289,6 +291,7 @@ namespace std
 
   using Vc::isfinite;
   using Vc::isnan;
+  */
 } // namespace std
 #endif
 
