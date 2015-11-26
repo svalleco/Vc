@@ -36,6 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "simdarrayfwd.h"
 #include "loadstoreflags.h"
 #include "writemaskedvector.h"
+#include "casts.h"
 
 namespace Vc_VERSIONED_NAMESPACE
 {
@@ -504,7 +505,11 @@ public:
 #undef Vc_CMP_OP
     ///@}
 
-    /// reinterpret_cast the vector components to construct a vector of type \p V2.
+    /**
+     * reinterpret_cast the vector components to construct a vector of type \p V2.
+     *
+     * \deprecated use Vc::reinterpret_components_cast instead.
+     */
     template <typename V2> inline V2 reinterpretCast() const;
 
     /**
