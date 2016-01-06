@@ -115,20 +115,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // the Win32 ABI can't handle function parameters with alignment >= 16
 #define Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN 1
 #endif
-#if defined(__GNUC__) && !defined(Vc_NO_INLINE_ASM)
+
+#if defined(__GNUC__) && !defined(Vc_NO_INLINE_ASM) && !defined _WIN32
 #define Vc_GNU_ASM 1
 #endif
-
-#if defined(Vc_MSVC) && Vc_MSVC < 180000000
-// MSVC doesn't know constexpr and noexcept
-// first include the check that forbids macroizing keywords >:)
-#include <xkeycheck.h>
-#ifndef constexpr
-#define constexpr inline __forceinline
-#endif
-#define Vc_NO_NOEXCEPT 1
-#endif
-
 
 #ifdef Vc_GCC
 #  if Vc_GCC >= 0x40700 // && Vc_GCC < 0x408000)
