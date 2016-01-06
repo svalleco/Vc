@@ -33,7 +33,8 @@ namespace Vc_VERSIONED_NAMESPACE
 {
 namespace Detail
 {
-template <> Vc_CONST SSE::short_v sorted<CurrentImplementation::current()>(Vc_ALIGNED_PARAMETER(SSE::short_v) x_)
+template <>
+Vc_CONST SSE::short_v sorted<CurrentImplementation::current()>(SSE::short_v x_)
 {
     __m128i lo, hi, y, x = x_.data();
     // sort pairs
@@ -71,7 +72,8 @@ template <> Vc_CONST SSE::short_v sorted<CurrentImplementation::current()>(Vc_AL
     return _mm_unpacklo_epi16(lo, hi);
 }
 
-template <> Vc_CONST SSE::ushort_v sorted<CurrentImplementation::current()>(Vc_ALIGNED_PARAMETER(SSE::ushort_v) x_)
+template <>
+Vc_CONST SSE::ushort_v sorted<CurrentImplementation::current()>(SSE::ushort_v x_)
 {
     __m128i lo, hi, y, x = x_.data();
     // sort pairs
@@ -109,7 +111,7 @@ template <> Vc_CONST SSE::ushort_v sorted<CurrentImplementation::current()>(Vc_A
     return _mm_unpacklo_epi16(lo, hi);
 }
 
-template <> Vc_CONST SSE::int_v sorted<CurrentImplementation::current()>(Vc_ALIGNED_PARAMETER(SSE::int_v) x_)
+template <> Vc_CONST SSE::int_v sorted<CurrentImplementation::current()>(SSE::int_v x_)
 {
     __m128i x = x_.data();
     /*
@@ -144,7 +146,7 @@ template <> Vc_CONST SSE::int_v sorted<CurrentImplementation::current()>(Vc_ALIG
     return _mm_unpacklo_epi32(l, h);
 }
 
-template <> Vc_CONST SSE::uint_v sorted<CurrentImplementation::current()>(Vc_ALIGNED_PARAMETER(SSE::uint_v) x_)
+template <> Vc_CONST SSE::uint_v sorted<CurrentImplementation::current()>(SSE::uint_v x_)
 {
     __m128i x = x_.data();
     __m128i y = _mm_shuffle_epi32(x, _MM_SHUFFLE(2, 3, 0, 1));
@@ -164,7 +166,8 @@ template <> Vc_CONST SSE::uint_v sorted<CurrentImplementation::current()>(Vc_ALI
     return _mm_unpacklo_epi32(l, h);
 }
 
-template <> Vc_CONST SSE::float_v sorted<CurrentImplementation::current()>(Vc_ALIGNED_PARAMETER(SSE::float_v) x_)
+template <>
+Vc_CONST SSE::float_v sorted<CurrentImplementation::current()>(SSE::float_v x_)
 {
     __m128 x = x_.data();
     __m128 y = _mm_shuffle_ps(x, x, _MM_SHUFFLE(2, 3, 0, 1));

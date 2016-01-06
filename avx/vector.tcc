@@ -146,13 +146,16 @@ template<typename T> inline AVX2::Vector<T> &Vector<T, VectorAbi::Avx>::operator
     return *this;
 }
 // per default fall back to scalar division
-template<typename T> inline AVX2::Vector<T> &Vector<T, VectorAbi::Avx>::operator/=(Vc_ALIGNED_PARAMETER(AVX2::Vector<T>) x)
+template <typename T>
+inline AVX2::Vector<T> &Vector<T, VectorAbi::Avx>::operator/=(AVX2::Vector<T> x)
 {
     Common::for_all_vector_entries<Size>([&](size_t i) { d.set(i, d.m(i) / x.d.m(i)); });
     return *this;
 }
 
-template<typename T> inline Vc_PURE AVX2::Vector<T> Vector<T, VectorAbi::Avx>::operator/(Vc_ALIGNED_PARAMETER(AVX2::Vector<T>) x) const
+template <typename T>
+inline Vc_PURE AVX2::Vector<T> Vector<T, VectorAbi::Avx>::operator/(
+    AVX2::Vector<T> x) const
 {
     AVX2::Vector<T> r;
     Common::for_all_vector_entries<Size>(
@@ -173,12 +176,12 @@ static Vc_INTRINSIC __m256i Vc_CONST divInt(__m256i a, __m256i b)
             _mm256_cvttpd_epi32(_mm256_div_pd(hi1, hi2))
             );
 }
-template<> inline AVX2::int_v &AVX2::int_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::int_v) x)
+template <> inline AVX2::int_v &AVX2::int_v::operator/=(AVX2::int_v x)
 {
     d.v() = divInt(d.v(), x.d.v());
     return *this;
 }
-template<> inline AVX2::int_v Vc_PURE AVX2::int_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::int_v) x) const
+template <> inline AVX2::int_v Vc_PURE AVX2::int_v::operator/(AVX2::int_v x) const
 {
     return divInt(d.v(), x.d.v());
 }
@@ -202,12 +205,13 @@ static inline __m256i Vc_CONST divUInt(__m256i a, __m256i b) {
         avx_cast<__m256>(a),
         avx_cast<__m256>(cmpeq_epi32(b, setone_epi32()))));
 }
-template<> Vc_ALWAYS_INLINE AVX2::uint_v &AVX2::uint_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::uint_v) x)
+template <> Vc_ALWAYS_INLINE AVX2::uint_v &AVX2::uint_v::operator/=(AVX2::uint_v x)
 {
     d.v() = divUInt(d.v(), x.d.v());
     return *this;
 }
-template<> Vc_ALWAYS_INLINE AVX2::uint_v Vc_PURE AVX2::uint_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::uint_v) x) const
+template <>
+Vc_ALWAYS_INLINE AVX2::uint_v Vc_PURE AVX2::uint_v::operator/(AVX2::uint_v x) const
 {
     return divUInt(d.v(), x.d.v());
 }
@@ -230,40 +234,44 @@ template <typename T> static inline __m256i Vc_CONST divShort(__m256i a, __m256i
     }
     return concat(convert<float, short>(lo), convert<float, short>(hi));
 }
-template<> Vc_ALWAYS_INLINE AVX2::short_v &AVX2::short_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::short_v) x)
+template <> Vc_ALWAYS_INLINE AVX2::short_v &AVX2::short_v::operator/=(AVX2::short_v x)
 {
     d.v() = divShort<short>(d.v(), x.d.v());
     return *this;
 }
-template<> Vc_ALWAYS_INLINE AVX2::short_v Vc_PURE AVX2::short_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::short_v) x) const
+template <>
+Vc_ALWAYS_INLINE AVX2::short_v Vc_PURE AVX2::short_v::operator/(AVX2::short_v x) const
 {
     return divShort<short>(d.v(), x.d.v());
 }
-template<> Vc_ALWAYS_INLINE AVX2::ushort_v &AVX2::ushort_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::ushort_v) x)
+template <> Vc_ALWAYS_INLINE AVX2::ushort_v &AVX2::ushort_v::operator/=(AVX2::ushort_v x)
 {
     d.v() = divShort<unsigned short>(d.v(), x.d.v());
     return *this;
 }
-template<> Vc_ALWAYS_INLINE AVX2::ushort_v Vc_PURE AVX2::ushort_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::ushort_v) x) const
+template <>
+Vc_ALWAYS_INLINE AVX2::ushort_v Vc_PURE AVX2::ushort_v::operator/(AVX2::ushort_v x) const
 {
     return divShort<unsigned short>(d.v(), x.d.v());
 }
 #endif
-template<> Vc_INTRINSIC AVX2::float_v &AVX2::float_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::float_v) x)
+template <> Vc_INTRINSIC AVX2::float_v &AVX2::float_v::operator/=(AVX2::float_v x)
 {
     d.v() = _mm256_div_ps(d.v(), x.d.v());
     return *this;
 }
-template<> Vc_INTRINSIC AVX2::float_v Vc_PURE AVX2::float_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::float_v) x) const
+template <>
+Vc_INTRINSIC AVX2::float_v Vc_PURE AVX2::float_v::operator/(AVX2::float_v x) const
 {
     return _mm256_div_ps(d.v(), x.d.v());
 }
-template<> Vc_INTRINSIC AVX2::double_v &AVX2::double_v::operator/=(Vc_ALIGNED_PARAMETER(AVX2::double_v) x)
+template <> Vc_INTRINSIC AVX2::double_v &AVX2::double_v::operator/=(AVX2::double_v x)
 {
     d.v() = _mm256_div_pd(d.v(), x.d.v());
     return *this;
 }
-template<> Vc_INTRINSIC AVX2::double_v Vc_PURE AVX2::double_v::operator/(Vc_ALIGNED_PARAMETER(AVX2::double_v) x) const
+template <>
+Vc_INTRINSIC AVX2::double_v Vc_PURE AVX2::double_v::operator/(AVX2::double_v x) const
 {
     return _mm256_div_pd(d.v(), x.d.v());
 }

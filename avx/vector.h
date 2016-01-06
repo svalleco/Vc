@@ -107,13 +107,8 @@ public:
                                           SimdArray<int, Size, SSE::int_v, 4>,
                                           SimdArray<int, Size, Scalar::int_v, 1>>::type IndexType;
 #endif
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-        typedef const Vector<T, abi> &AsArg;
-        typedef const VectorType &VectorTypeArg;
-#else
         typedef Vector<T, abi> AsArg;
         typedef VectorType VectorTypeArg;
-#endif
 
     protected:
         template <typename U> using V = Vector<U, abi>;
@@ -125,8 +120,7 @@ public:
         typedef AVX::VectorHelper<T> HT;
 
         // cast any m256/m128 to VectorType
-        template <typename V>
-        static Vc_INTRINSIC VectorType _cast(Vc_ALIGNED_PARAMETER(V) v)
+        template <typename V> static Vc_INTRINSIC VectorType _cast(V v)
         {
             return AVX::avx_cast<VectorType>(v);
         }
@@ -150,9 +144,8 @@ public:
         // implict conversion from compatible Vector<U, abi>
         template <typename U>
         Vc_INTRINSIC Vector(
-            Vc_ALIGNED_PARAMETER(V<U>) x,
-            typename std::enable_if<Traits::is_implicit_cast_allowed<U, T>::value,
-                                    void *>::type = nullptr)
+            V<U> x, typename std::enable_if<Traits::is_implicit_cast_allowed<U, T>::value,
+                                            void *>::type = nullptr)
             : d(AVX::convert<U, T>(x.data()))
         {
         }
@@ -160,7 +153,7 @@ public:
         // static_cast from the remaining Vector<U, abi>
         template <typename U>
         Vc_INTRINSIC explicit Vector(
-            Vc_ALIGNED_PARAMETER(V<U>) x,
+            V<U> x,
             typename std::enable_if<!Traits::is_implicit_cast_allowed<U, T>::value,
                                     void *>::type = nullptr)
             : d(Detail::zeroExtendIfNeeded(AVX::convert<U, T>(x.data())))
@@ -263,8 +256,8 @@ public:
         Vc_OP(*, mul)
 #undef Vc_OP
         inline Vector &operator/=(EntryType x);
-        inline Vector &operator/=(Vc_ALIGNED_PARAMETER(Vector) x);
-        inline Vc_PURE_L Vector operator/ (Vc_ALIGNED_PARAMETER(Vector) x) const Vc_PURE_R;
+        inline Vector &operator/=(Vector x);
+        inline Vc_PURE_L Vector operator/ (Vector x) const Vc_PURE_R;
 
         // bitwise ops
 #define Vc_OP_VEC(op)                                                                    \

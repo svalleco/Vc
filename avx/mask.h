@@ -71,15 +71,9 @@ public:
     using VectorTypeI = AVX::IntegerVectorType<VectorTypeF>;
 
 private:
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-    typedef const VectorTypeF &VArg;
-    typedef const VectorTypeD &VdArg;
-    typedef const VectorTypeI &ViArg;
-#else
     typedef const VectorTypeF VArg;
     typedef const VectorTypeD VdArg;
     typedef const VectorTypeI ViArg;
-#endif
 
 public:
     static constexpr size_t Size = sizeof(VectorTypeF) / sizeof(T);

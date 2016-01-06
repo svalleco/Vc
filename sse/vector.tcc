@@ -137,14 +137,15 @@ template<typename T> inline Vector<T, VectorAbi::Sse> &Vector<T, VectorAbi::Sse>
 }
 
 template <typename T>
-inline Vector<T, VectorAbi::Sse> &Vector<T, VectorAbi::Sse>::operator/=(
-    Vc_ALIGNED_PARAMETER(V<T>) x)
+inline Vector<T, VectorAbi::Sse> &Vector<T, VectorAbi::Sse>::operator/=(V<T> x)
 {
     Common::for_all_vector_entries<Size>([&](size_t i) { d.set(i, d.m(i) / x.d.m(i)); });
     return *this;
 }
 
-template<typename T> inline Vc_PURE Vector<T, VectorAbi::Sse> Vector<T, VectorAbi::Sse>::operator/(Vc_ALIGNED_PARAMETER(V<T>) x) const
+template <typename T>
+inline Vc_PURE Vector<T, VectorAbi::Sse> Vector<T, VectorAbi::Sse>::operator/(
+    V<T> x) const
 {
     Vector<T, VectorAbi::Sse> r;
     Common::for_all_vector_entries<Size>(
@@ -152,7 +153,7 @@ template<typename T> inline Vc_PURE Vector<T, VectorAbi::Sse> Vector<T, VectorAb
     return r;
 }
 
-template<> inline SSE::short_v &SSE::short_v::operator/=(Vc_ALIGNED_PARAMETER(SSE::short_v) x)
+template <> inline SSE::short_v &SSE::short_v::operator/=(SSE::short_v x)
 {
     __m128 lo = _mm_cvtepi32_ps(HT::expand0(d.v()));
     __m128 hi = _mm_cvtepi32_ps(HT::expand1(d.v()));
@@ -162,7 +163,7 @@ template<> inline SSE::short_v &SSE::short_v::operator/=(Vc_ALIGNED_PARAMETER(SS
     return *this;
 }
 
-template<> inline Vc_PURE SSE::short_v SSE::short_v::operator/(Vc_ALIGNED_PARAMETER(SSE::short_v) x) const
+template <> inline Vc_PURE SSE::short_v SSE::short_v::operator/(SSE::short_v x) const
 {
     __m128 lo = _mm_cvtepi32_ps(HT::expand0(d.v()));
     __m128 hi = _mm_cvtepi32_ps(HT::expand1(d.v()));
@@ -171,7 +172,7 @@ template<> inline Vc_PURE SSE::short_v SSE::short_v::operator/(Vc_ALIGNED_PARAME
     return HT::concat(_mm_cvttps_epi32(lo), _mm_cvttps_epi32(hi));
 }
 
-template<> inline SSE::ushort_v &SSE::ushort_v::operator/=(Vc_ALIGNED_PARAMETER(SSE::ushort_v) x)
+template <> inline SSE::ushort_v &SSE::ushort_v::operator/=(SSE::ushort_v x)
 {
     __m128 lo = _mm_cvtepi32_ps(HT::expand0(d.v()));
     __m128 hi = _mm_cvtepi32_ps(HT::expand1(d.v()));
@@ -181,7 +182,8 @@ template<> inline SSE::ushort_v &SSE::ushort_v::operator/=(Vc_ALIGNED_PARAMETER(
     return *this;
 }
 
-template<> Vc_ALWAYS_INLINE Vc_PURE SSE::ushort_v SSE::ushort_v::operator/(Vc_ALIGNED_PARAMETER(SSE::ushort_v) x) const
+template <>
+Vc_ALWAYS_INLINE Vc_PURE SSE::ushort_v SSE::ushort_v::operator/(SSE::ushort_v x) const
 {
     __m128 lo = _mm_cvtepi32_ps(HT::expand0(d.v()));
     __m128 hi = _mm_cvtepi32_ps(HT::expand1(d.v()));
@@ -190,24 +192,26 @@ template<> Vc_ALWAYS_INLINE Vc_PURE SSE::ushort_v SSE::ushort_v::operator/(Vc_AL
     return HT::concat(_mm_cvttps_epi32(lo), _mm_cvttps_epi32(hi));
 }
 
-template<> Vc_ALWAYS_INLINE SSE::float_v &SSE::float_v::operator/=(Vc_ALIGNED_PARAMETER(SSE::float_v) x)
+template <> Vc_ALWAYS_INLINE SSE::float_v &SSE::float_v::operator/=(SSE::float_v x)
 {
     d.v() = _mm_div_ps(d.v(), x.d.v());
     return *this;
 }
 
-template<> Vc_ALWAYS_INLINE Vc_PURE SSE::float_v SSE::float_v::operator/(Vc_ALIGNED_PARAMETER(SSE::float_v) x) const
+template <>
+Vc_ALWAYS_INLINE Vc_PURE SSE::float_v SSE::float_v::operator/(SSE::float_v x) const
 {
     return _mm_div_ps(d.v(), x.d.v());
 }
 
-template<> Vc_ALWAYS_INLINE SSE::double_v &SSE::double_v::operator/=(Vc_ALIGNED_PARAMETER(SSE::double_v) x)
+template <> Vc_ALWAYS_INLINE SSE::double_v &SSE::double_v::operator/=(SSE::double_v x)
 {
     d.v() = _mm_div_pd(d.v(), x.d.v());
     return *this;
 }
 
-template<> Vc_ALWAYS_INLINE Vc_PURE SSE::double_v SSE::double_v::operator/(Vc_ALIGNED_PARAMETER(SSE::double_v) x) const
+template <>
+Vc_ALWAYS_INLINE Vc_PURE SSE::double_v SSE::double_v::operator/(SSE::double_v x) const
 {
     return _mm_div_pd(d.v(), x.d.v());
 }
@@ -709,7 +713,7 @@ template<typename T> Vc_INTRINSIC Vc_PURE Vector<T, VectorAbi::Sse> Vector<T, Ve
 // sorted {{{1
 namespace Detail
 {
-inline Vc_CONST SSE::double_v sorted(Vc_ALIGNED_PARAMETER(SSE::double_v) x_)
+inline Vc_CONST SSE::double_v sorted(SSE::double_v x_)
 {
     const __m128d x = x_.data();
     const __m128d y = _mm_shuffle_pd(x, x, _MM_SHUFFLE2(0, 1));

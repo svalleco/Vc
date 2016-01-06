@@ -87,11 +87,7 @@ template <typename T> class Vector<T, VectorAbi::Sse>
         using mask_type = Mask;
         typedef typename Mask::Argument MaskArg;
         typedef typename Mask::Argument MaskArgument;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-        typedef const Vector &AsArg;
-#else
         typedef const Vector AsArg;
-#endif
         using abi = VectorAbi::Sse;
         using WriteMaskedVector = Common::WriteMaskedVector<Vector, Mask>;
         template <typename U> using V = Vector<U, abi>;
@@ -107,9 +103,8 @@ template <typename T> class Vector<T, VectorAbi::Sse>
         // implict conversion from compatible Vector<U>
         template <typename U>
         Vc_INTRINSIC Vector(
-            Vc_ALIGNED_PARAMETER(V<U>) x,
-            typename std::enable_if<Traits::is_implicit_cast_allowed<U, T>::value,
-                                    void *>::type = nullptr)
+            V<U> x, typename std::enable_if<Traits::is_implicit_cast_allowed<U, T>::value,
+                                            void *>::type = nullptr)
             : d(SSE::convert<U, T>(x.data()))
         {
         }
@@ -117,7 +112,7 @@ template <typename T> class Vector<T, VectorAbi::Sse>
         // static_cast from the remaining Vector<U>
         template <typename U>
         Vc_INTRINSIC explicit Vector(
-            Vc_ALIGNED_PARAMETER(V<U>) x,
+            V<U> x,
             typename std::enable_if<!Traits::is_implicit_cast_allowed<U, T>::value,
                                     void *>::type = nullptr)
             : d(SSE::convert<U, T>(x.data()))
@@ -204,8 +199,8 @@ template <typename T> class Vector<T, VectorAbi::Sse>
         Vc_INTRINSIC_L Vector  operator>> (  int shift) const Vc_INTRINSIC_R;
 
         inline Vector &operator/=(EntryType x);
-        inline Vector &operator/=(Vc_ALIGNED_PARAMETER(Vector) x);
-        inline Vc_PURE_L Vector operator/ (Vc_ALIGNED_PARAMETER(Vector) x) const Vc_PURE_R;
+        inline Vector &operator/=(Vector x);
+        inline Vc_PURE_L Vector operator/(Vector x) const Vc_PURE_R;
 
 #define Vc_OP(symbol)                                                                    \
     Vc_INTRINSIC Vector &operator symbol##=(const Vector &x)                             \

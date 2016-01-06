@@ -43,11 +43,7 @@ namespace AVX
         template<> struct VectorHelper<__m256>
         {
             typedef __m256 VectorType;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-            typedef const VectorType & VTArg;
-#else
             typedef const VectorType VTArg;
-#endif
 
             template<typename Flags> static Vc_ALWAYS_INLINE void store(float *mem, VTArg x, typename Flags::EnableIfAligned               = nullptr) { _mm256_store_ps(mem, x); }
             template<typename Flags> static Vc_ALWAYS_INLINE void store(float *mem, VTArg x, typename Flags::EnableIfUnalignedNotStreaming = nullptr) { _mm256_storeu_ps(mem, x); }
@@ -61,11 +57,7 @@ namespace AVX
         template<> struct VectorHelper<__m256d>
         {
             typedef __m256d VectorType;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-            typedef const VectorType & VTArg;
-#else
             typedef const VectorType VTArg;
-#endif
 
             template<typename Flags> static Vc_ALWAYS_INLINE void store(double *mem, VTArg x, typename Flags::EnableIfAligned               = nullptr) { _mm256_store_pd(mem, x); }
             template<typename Flags> static Vc_ALWAYS_INLINE void store(double *mem, VTArg x, typename Flags::EnableIfUnalignedNotStreaming = nullptr) { _mm256_storeu_pd(mem, x); }
@@ -79,11 +71,7 @@ namespace AVX
         template<> struct VectorHelper<__m256i>
         {
             typedef __m256i VectorType;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-            typedef const VectorType & VTArg;
-#else
             typedef const VectorType VTArg;
-#endif
 
             template<typename Flags, typename T> static Vc_ALWAYS_INLINE void store(T *mem, VTArg x, typename Flags::EnableIfAligned               = nullptr) { _mm256_store_si256(reinterpret_cast<__m256i *>(mem), x); }
             template<typename Flags, typename T> static Vc_ALWAYS_INLINE void store(T *mem, VTArg x, typename Flags::EnableIfUnalignedNotStreaming = nullptr) { _mm256_storeu_si256(reinterpret_cast<__m256i *>(mem), x); }
@@ -107,11 +95,7 @@ namespace AVX
 
         template<> struct VectorHelper<double> {
             typedef __m256d VectorType;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-            typedef const VectorType & VTArg;
-#else
             typedef const VectorType VTArg;
-#endif
             typedef double EntryType;
 #define Vc_SUFFIX pd
 
@@ -196,11 +180,7 @@ namespace AVX
         template<> struct VectorHelper<float> {
             typedef float EntryType;
             typedef __m256 VectorType;
-#ifdef Vc_PASSING_VECTOR_BY_VALUE_IS_BROKEN
-            typedef const VectorType & VTArg;
-#else
             typedef const VectorType VTArg;
-#endif
 #define Vc_SUFFIX ps
 
             static Vc_ALWAYS_INLINE Vc_CONST VectorType notMaskedToZero(VTArg a, __m256 mask) { return Vc_CAT2(_mm256_and_, Vc_SUFFIX)(mask, a); }
