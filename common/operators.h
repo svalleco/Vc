@@ -44,16 +44,13 @@ template <typename T> constexpr bool isUnsigned()
 {
     return !std::is_same<Traits::decay<T>, bool>::value && Traits::is_unsigned<T>::value;
 }
-template <typename T> constexpr bool isIntegral()
-{
-    return Traits::is_integral<T>::value;
-}
 template <typename T> constexpr bool isVector()
 {
     return Traits::is_simd_vector_internal<Traits::decay<T>>::value;
 }
 
-template <typename T, bool = isIntegral<T>(), bool = isVector<T>()>
+template <typename T, bool = Traits::is_integral<T>::value,
+          bool = Traits::is_simd_vector_internal<Traits::decay<T>>::value>
 struct MakeUnsignedInternal;
 template <template <typename, typename> class Vector_, typename T, typename Abi>
 struct MakeUnsignedInternal<Vector_<T, Abi>, true, true>
@@ -66,7 +63,8 @@ template <typename T> struct MakeUnsignedInternal<T, false, true>
 };
 
 template <typename Test, typename T>
-using CopyUnsigned = typename MakeUnsignedInternal<T, isIntegral<T>() && isUnsigned<Test>()>::type;
+using CopyUnsigned = typename MakeUnsignedInternal<T,
+      Traits::is_integral<T>::value && isUnsigned<Test>()>::type;
 
 /* § 8.5.4 p7:
  * A narrowing conversion is an implicit conversion
@@ -120,7 +118,8 @@ template <typename V, typename W> constexpr bool participateInOverloadResolution
                                        // resolution at all
 }
 
-template <typename V, typename W> constexpr enable_if<isVector<V>(), bool> isValidOperandTypes()
+template <typename V, typename W>
+constexpr enable_if<Traits::is_simd_vector_internal<Traits::decay<V>>::value, bool> isValidOperandTypes()
 {
     // Vc does not allow operands that could possibly have different Vector::Size.
     return isVector<W>()
@@ -129,10 +128,22 @@ template <typename V, typename W> constexpr enable_if<isVector<V>(), bool> isVal
                   !isNarrowingFloatConversion<W, typename DetermineReturnType<V, W>::EntryType>());
 }
 
+template <typename V, typename W>
+constexpr enable_if<!Traits::is_simd_vector_internal<Traits::decay<V>>::value, bool> isValidOperandTypes()
+{
+	return false;
+}
+
+template <typename V, typename W> struct is_valid_vector_operation
+    : public std::integral_constant<bool,
+                                    participateInOverloadResolution<V, W>() &&
+                                    isValidOperandTypes<V, W>()>
+{};
+
 template <
     typename V,
     typename W,
-    bool VectorOperation = participateInOverloadResolution<V, W>() && isValidOperandTypes<V, W>()>
+    bool VectorOperation = is_valid_vector_operation<V, W>::value>
 struct TypesForOperatorInternal
 {
 };
@@ -144,8 +155,8 @@ template <typename V, typename W> struct TypesForOperatorInternal<V, W, true>
 
 template <typename L, typename R>
 using TypesForOperator = typename TypesForOperatorInternal<
-    Traits::decay<conditional_t<isVector<L>(), L, R>>,
-    Traits::decay<conditional_t<!isVector<L>(), L, R>>>::type;
+    Traits::decay<conditional_t<Traits::is_simd_vector_internal<Traits::decay<L>>::value, L, R>>,
+    Traits::decay<conditional_t<!Traits::is_simd_vector_internal<Traits::decay<L>>::value, L, R>>>::type;
 
 template <
     typename V,
@@ -162,8 +173,8 @@ template <typename V, typename W> struct IsIncorrectVectorOperands<V, W, true>
 template <typename L, typename R>
 using Vc_does_not_allow_operands_to_a_binary_operator_which_can_have_different_SIMD_register_sizes_on_some_targets_and_thus_enforces_portability =
     typename IsIncorrectVectorOperands<
-        Traits::decay<conditional_t<isVector<L>(), L, R>>,
-        Traits::decay<conditional_t<!isVector<L>(), L, R>>>::type;
+        Traits::decay<conditional_t<Traits::is_simd_vector_internal<Traits::decay<L>>::value, L, R>>,
+        Traits::decay<conditional_t<!Traits::is_simd_vector_internal<Traits::decay<L>>::value, L, R>>>::type;
 }  // namespace Common
 
 #define Vc_GENERIC_OPERATOR(op)                                                          \
