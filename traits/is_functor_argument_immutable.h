@@ -50,8 +50,10 @@ template <typename F, typename A> std::false_type test(...);
 }  // namespace is_functor_argument_immutable_impl
 
 template <typename F, typename A>
-using is_functor_argument_immutable =
-    decltype(is_functor_argument_immutable_impl::test<F, A>(1));
+struct is_functor_argument_immutable :
+    public decltype(is_functor_argument_immutable_impl::test<F, A>(1))
+{
+};
 
 }  // namespace Traits
 }  // namespace Vc
