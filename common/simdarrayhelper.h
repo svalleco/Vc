@@ -487,7 +487,7 @@ template <typename Op, typename Arg> Arg conditionalUnpack(std::false_type, Op, 
 
 /// true-/false_type that selects whether the argument with index B should be unpacked
 template <size_t A, size_t B, size_t N>
-using selectorType = std::integral_constant<bool, ((A & (1 << B)) != 0)>;
+using selectorType = std::integral_constant<bool, ((A & (size_t(1) << B)) != 0)>;
 
 /// workaround for a bug in ICC
 template <typename... Args> static constexpr size_t icc_sizeof_workaround()
