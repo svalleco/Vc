@@ -83,7 +83,7 @@ public:
     using mask_type = typename traits_type::mask_type;
     using Mask = mask_type;
     using MaskType = mask_type;
-    using MaskArg Vc_DEPRECATED("Use MaskArgument instead.") = typename Mask::AsArg;
+    using MaskArg Vc_DEPRECATED_ALIAS("Use MaskArgument instead.") = typename Mask::AsArg;
     using MaskArgument = typename Mask::AsArg;
 
     Vc_FREE_STORE_OPERATORS_ALIGNED(alignof(VectorType))
