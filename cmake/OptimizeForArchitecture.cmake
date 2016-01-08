@@ -121,7 +121,12 @@ macro(AutodetectHostArchitecture)
             set(TARGET_ARCHITECTURE "skylake")
          elseif(_cpu_model EQUAL 0x3D OR _cpu_model EQUAL 0x47 OR _cpu_model EQUAL 0x56)
             set(TARGET_ARCHITECTURE "broadwell")
-         elseif(_cpu_model EQUAL 0x3C OR _cpu_model EQUAL 0x45 OR _cpu_model EQUAL 0x46 OR _cpu_model EQUAL 0x3F)
+         elseif(_cpu_model EQUAL 0x3C
+               OR _cpu_model EQUAL 0x45
+               OR _cpu_model EQUAL 0x46
+               OR _cpu_model EQUAL 0x3F
+               OR _cpu_model EQUAL 63 # this is equal to 0x3F, but maybe it fixes a Windows issue
+               )
             set(TARGET_ARCHITECTURE "haswell")
          elseif(_cpu_model EQUAL 0x3A OR _cpu_model EQUAL 0x3E)
             set(TARGET_ARCHITECTURE "ivy-bridge")
