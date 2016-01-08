@@ -34,6 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "simdarrayhelper.h"
 #include "utility.h"
 #include "maskentry.h"
+#include "const.h"
 
 #include "macros.h"
 
@@ -44,7 +45,8 @@ namespace Vc_VERSIONED_NAMESPACE
 
 template <typename T, std::size_t N, typename VectorType_>
 class alignas(
-    ((Common::nextPowerOfTwo(N) * (sizeof(VectorType_) / VectorType_::size()) - 1) & 127) +
+    ((Common::nextPowerOfTwo(N) * (sizeof(VectorType_) / VectorType_::size()) - 1) &
+     (Detail::maxSupportedAlignment - 1)) +
     1) SimdMaskArray<T, N, VectorType_, N>
 {
 public:
@@ -250,7 +252,8 @@ constexpr std::size_t SimdMaskArray<T, N, VectorType, N>::MemoryAlignment;
 
 template <typename T, std::size_t N, typename VectorType, std::size_t>
 class alignas(
-    ((Common::nextPowerOfTwo(N) * (sizeof(VectorType) / VectorType::size()) - 1) & 127) +
+    ((Common::nextPowerOfTwo(N) * (sizeof(VectorType) / VectorType::size()) - 1) &
+     (Detail::maxSupportedAlignment - 1)) +
     1) SimdMaskArray
 {
     static constexpr std::size_t N0 = Common::nextPowerOfTwo(N - N / 2);
