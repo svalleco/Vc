@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "simdarrayfwd.h"
 #include "loadstoreflags.h"
 #include "writemaskedvector.h"
-#include "casts.h"
 
 namespace Vc_VERSIONED_NAMESPACE
 {
@@ -103,6 +102,36 @@ template <typename T, typename Abi>
 Vc_INTRINSIC Vc_CONST typename Vector<T, Abi>::MaskType isnegative(Vector<T, Abi> x)
 {
     return x < Vector<T, Abi>::Zero();
+}
+
+/**
+ * \ingroup Utilities
+ * Constructs a new Vector object of type \p V from the Vector \p x, reinterpreting the
+ * bits of \p x for the new type \p V.
+ *
+ * This function is only applicable if:
+ * - the \c sizeof of the input and output types is equal
+ * - the Vector::size() of the input and output types is equal
+ * - the \c VectorEntryTypes of input and output have equal \c sizeof
+ *
+ * \tparam V The requested type to change \p x into.
+ * \param x The Vector to reinterpret as an object of type \p V.
+ * \returns A new object (rvalue) of type \p V.
+ *
+ * \warning This cast is non-portable since the applicability (see above) may change
+ * depending on the default vector types of the target platform. The function is perfectly
+ * safe to use with fully specified \p Abi, though.
+ */
+template <typename V, typename T, typename Abi>
+Vc_ALWAYS_INLINE Vc_CONST
+    enable_if<(V::size() == Vector<T, Abi>::size() &&
+               sizeof(typename V::VectorEntryType) ==
+                   sizeof(typename Vector<T, Abi>::VectorEntryType) &&
+               sizeof(V) == sizeof(Vector<T, Abi>)),
+              V>
+    reinterpret_components_cast(const Vector<T, Abi> &x)
+{
+    return reinterpret_cast<const V &>(x);
 }
 
 /**
@@ -506,13 +535,6 @@ public:
     ///@}
 
     /**
-     * reinterpret_cast the vector components to construct a vector of type \p V2.
-     *
-     * \deprecated use Vc::reinterpret_components_cast instead.
-     */
-    template <typename V2> inline V2 reinterpretCast() const;
-
-    /**
      * Writemask the vector before an assignment.
      *
      * \param mask The writemask to be used.
@@ -770,6 +792,13 @@ public:
      * \deprecated Use Vc::simd_cast instead.
      */
     template <typename V2> inline V2 staticCast() const;
+
+    /**
+     * reinterpret_cast the vector components to construct a vector of type \p V2.
+     *
+     * \deprecated use Vc::reinterpret_components_cast instead.
+     */
+    template <typename V2> inline V2 reinterpretCast() const;
 
     /**
      * Copies the signs of the components of \p reference to the components of the current

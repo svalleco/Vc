@@ -26,6 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }}}*/
 
+#define UNITTEST_ONLY_XTEST 1
 #include "unittest.h"
 #include "vectormemoryhelper.h"
 #include <Vc/cpuid.h>
@@ -428,17 +429,29 @@ TEST_TYPES(V, testNonMemberInterleave, (ALL_VECTORS, SIMD_ARRAYS(1), SIMD_ARRAYS
     }
 }
 
-TEST(reinterpret_components_cast)
+using CastTypes = Typelist<
+#if Vc_FLOAT_V_SIZE == Vc_INT_V_SIZE
+    Typelist<float_v, int_v>,
+#endif
+#if Vc_FLOAT_V_SIZE == Vc_UINT_V_SIZE
+    Typelist<float_v, uint_v>,
+#endif
+    TypelistSentinel
+    >;
+XTEST_TYPES(P, reinterpret_components_cast, (CastTypes))
 {
-    float_v x(IndexesFromZero);
-    const auto test = reinterpret_components_cast<uint_v>(x);
+    using From = typename P::template at<0>;
+    using To = typename P::template at<1>;
+    //using To = SimdArray<unsigned int, From::size()>;
+    From x(IndexesFromZero);
+    const auto test = reinterpret_components_cast<To>(x);
     std::size_t i = 0;
-    for (; i < std::min(float_v::size(), uint_v::size()); ++i) {
-        union { float f; unsigned int u; } cvt;
+    for (; i < From::size(); ++i) {
+        union {
+            typename From::EntryType f;
+            typename To::EntryType u;
+        } cvt;
         cvt.f = i;
         COMPARE(test[i], cvt.u);
-    }
-    for (; i < uint_v::size(); ++i) {
-        COMPARE(test[i], 0u);
     }
 }
