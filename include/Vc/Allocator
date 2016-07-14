@@ -139,6 +139,8 @@ namespace Vc_VERSIONED_NAMESPACE
 #endif
 #ifdef Vc_IMPL_MIC
             SimdAlignment = 64,
+#elif defined Vc_IMPL_AVX512
+            SimdAlignment = 64,
 #elif defined Vc_IMPL_AVX
             SimdAlignment = 32,
 #elif defined Vc_IMPL_SSE

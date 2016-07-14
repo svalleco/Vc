@@ -1,5 +1,6 @@
 /*  This file is part of the Vc library. {{{
-Copyright © 2015 Matthias Kretz <kretz@kde.org>
+Copyright © 2013-2015 Matthias Kretz <kretz@kde.org>
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -25,15 +26,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }}}*/
 
-#ifndef VC_COMMON_VECTORTRAITS_H_
-#define VC_COMMON_VECTORTRAITS_H_
+#ifndef VC_AVX512_MASK_TCC_
+#define VC_AVX512_MASK_TCC_
 
-#include "vectorabi.h"
+#include "macros.h"
 
 namespace Vc_VERSIONED_NAMESPACE
 {
-template <typename T, typename Abi> struct VectorTraits;
-}  // namespace Vc
-#endif  // VC_COMMON_VECTORTRAITS_H_
+template <>
+template <typename Flags>
+inline void AVX512::double_m::load(const bool *mem, Flags)
+{
+    __m512i ones = _mm512_setzero_epi32();
+    ones = _mm512_mask_extloadunpacklo_epi32(ones, 0xff, mem, AVX512::UpDownConversion<unsigned int, unsigned char>(), _MM_HINT_NONE);
+    ones = _mm512_mask_extloadunpackhi_epi32(ones, 0xff, mem + 64, AVX512::UpDownConversion<unsigned int, unsigned char>(), _MM_HINT_NONE);
+    //const __m512i ones = _mm512_mask_extload_epi32(_mm512_setzero_epi32(), 0xff, mem, , _MM_BROADCAST32_NONE, _MM_HINT_NONE);
+    k = _mm512_cmpneq_epi32_mask(ones, _mm512_setzero_epi32());
+}
 
-// vim: foldmethod=marker
+template <>
+template <typename Flags>
+inline void AVX512::double_m::store(bool *mem, Flags) const
+{
+    const __m512i zero = _mm512_setzero_epi32();
+    const __m512i one = _mm512_set1_epi32(1);
+    const __m512i tmp = AVX512::_and(zero, static_cast<__mmask16>(k), one, one);
+    _mm512_mask_extpackstorelo_epi32(mem, 0xff, tmp, AVX512::UpDownConversion<unsigned int, unsigned char>(), _MM_HINT_NONE);
+    _mm512_mask_extpackstorehi_epi32(mem + 64, 0xff, tmp, AVX512::UpDownConversion<unsigned int, unsigned char>(), _MM_HINT_NONE);
+}
+}  // namespace Vc
+
+#endif // VC_AVX512_MASK_TCC_

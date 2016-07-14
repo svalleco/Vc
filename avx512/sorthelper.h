@@ -1,5 +1,6 @@
 /*  This file is part of the Vc library. {{{
-Copyright © 2015 Matthias Kretz <kretz@kde.org>
+Copyright © 2013-2015 Matthias Kretz <kretz@kde.org>
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -25,15 +26,26 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }}}*/
 
-#ifndef VC_COMMON_VECTORTRAITS_H_
-#define VC_COMMON_VECTORTRAITS_H_
+#ifndef VC_AVX512_SORTHELPER_H_
+#define VC_AVX512_SORTHELPER_H_
 
-#include "vectorabi.h"
+#include <tuple>
+#include "types.h"
+#include "macros.h"
 
 namespace Vc_VERSIONED_NAMESPACE
 {
-template <typename T, typename Abi> struct VectorTraits;
-}  // namespace Vc
-#endif  // VC_COMMON_VECTORTRAITS_H_
+namespace AVX512
+{
 
-// vim: foldmethod=marker
+template<typename T> struct SortHelper
+{
+    typedef typename VectorTypeHelper<T>::Type VectorType;
+    static VectorType sort(Vc_ALIGNED_PARAMETER(VectorType));
+    template<typename... Vs> static std::tuple<Vs...> sort(Vc_ALIGNED_PARAMETER(std::tuple<Vs...>));
+};
+
+}  // namespace AVX512
+}  // namespace Vc
+
+#endif // VC_AVX512_SORTHELPER_H_

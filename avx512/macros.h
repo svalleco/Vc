@@ -1,5 +1,6 @@
 /*  This file is part of the Vc library. {{{
-Copyright © 2015 Matthias Kretz <kretz@kde.org>
+Copyright © 2013-2015 Matthias Kretz <kretz@kde.org>
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -25,15 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }}}*/
 
-#ifndef VC_COMMON_VECTORTRAITS_H_
-#define VC_COMMON_VECTORTRAITS_H_
+#include "../common/macros.h"
 
-#include "vectorabi.h"
+#ifndef VC_AVX512_MACROS_H_
+#define VC_AVX512_MACROS_H_
 
-namespace Vc_VERSIONED_NAMESPACE
-{
-template <typename T, typename Abi> struct VectorTraits;
-}  // namespace Vc
-#endif  // VC_COMMON_VECTORTRAITS_H_
-
-// vim: foldmethod=marker
+#endif // VC_AVX512_MACROS_H_

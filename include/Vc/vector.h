@@ -31,7 +31,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // 1. define all of Vc::Scalar - this one is always present, so it makes sense to put it first
 #include "scalar/vector.h"
 
-#ifdef Vc_IMPL_AVX
+#ifdef Vc_IMPL_AVX512
+#pragma message"Vc_IMPL_AVX512  is ON"
+# include "avx512/vector.h"
+#elif defined(Vc_IMPL_AVX)
 # include "avx/vector.h"
 #elif defined(Vc_IMPL_SSE)
 # include "sse/vector.h"
@@ -237,6 +240,11 @@ constexpr std::size_t MemoryAlignment = alignof(MemoryAlignedBase);
 # include "mic/helperimpl.h"
 # include "mic/math.h"
 # include "mic/simd_cast_caller.tcc"
+#endif
+#if defined(Vc_IMPL_AVX512)
+# include "avx512/helperimpl.h"
+# include "avx512/math.h"
+# include "avx512/simd_cast_caller.tcc"
 #endif
 
 #include "common/math.h"

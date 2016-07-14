@@ -54,6 +54,8 @@ public:
 
 #ifdef Vc_IMPL_Scalar
 # include "scalar/limits.h"
+#elif defined(Vc_IMPL_AVX512)
+# include "avx512/limits.h"
 #elif defined(Vc_IMPL_AVX)
 # include "avx/limits.h"
 #elif defined(Vc_IMPL_SSE)

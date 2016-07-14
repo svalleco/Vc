@@ -32,6 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "../sse/types.h"
 #include "../avx/types.h"
 #include "../mic/types.h"
+#include "../avx512/types.h"
 
 #include "utility.h"
 #include "macros.h"
@@ -62,7 +63,10 @@ template<std::size_t N, typename T, typename... Typelist> struct select_best_vec
 template <typename T, std::size_t N>
 using select_best_vector_type =
     typename select_best_vector_type_impl<N,
-#ifdef Vc_IMPL_AVX2
+#ifdef Vc_IMPL_AVX512
+                                          Vc::AVX512::Vector<T>,
+                                          Vc::Scalar::Vector<T>
+#elif defined(Vc_IMPL_AVX2)
                                           Vc::AVX2::Vector<T>,
                                           Vc::SSE::Vector<T>,
                                           Vc::Scalar::Vector<T>

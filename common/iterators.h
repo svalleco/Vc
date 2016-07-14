@@ -145,7 +145,7 @@ private:
 
 template <typename V> using ConstIterator = Iterator<const V>;
 
-#ifdef Vc_IMPL_MIC
+#if defined Vc_IMPL_MIC || defined Vc_IMPL_AVX512
     class BitmaskIterator/*{{{*/
     {
         const int mask;

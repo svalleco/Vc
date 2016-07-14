@@ -1,5 +1,6 @@
 /*  This file is part of the Vc library. {{{
-Copyright © 2015 Matthias Kretz <kretz@kde.org>
+Copyright © 2010-2015 Matthias Kretz <kretz@kde.org>
+All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
@@ -25,15 +26,34 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 }}}*/
 
-#ifndef VC_COMMON_VECTORTRAITS_H_
-#define VC_COMMON_VECTORTRAITS_H_
-
-#include "vectorabi.h"
+#ifndef VC_AVX512_PREFETCHES_TCC_
+#define VC_AVX512_PREFETCHES_TCC_
 
 namespace Vc_VERSIONED_NAMESPACE
 {
-template <typename T, typename Abi> struct VectorTraits;
+namespace Detail
+{
+Vc_ALWAYS_INLINE void prefetchForOneRead(const void *addr, VectorAbi::Avx512)
+{
+    _mm_prefetch(static_cast<char *>(const_cast<void *>(addr)), _MM_HINT_NTA);
+}
+Vc_ALWAYS_INLINE void prefetchClose(const void *addr, VectorAbi::Avx512)
+{
+    _mm_prefetch(static_cast<char *>(const_cast<void *>(addr)), _MM_HINT_T0);
+}
+Vc_ALWAYS_INLINE void prefetchMid(const void *addr, VectorAbi::Avx512)
+{
+    _mm_prefetch(static_cast<char *>(const_cast<void *>(addr)), _MM_HINT_T1);
+}
+Vc_ALWAYS_INLINE void prefetchFar(const void *addr, VectorAbi::Avx512)
+{
+    _mm_prefetch(static_cast<char *>(const_cast<void *>(addr)), _MM_HINT_T2);
+}
+Vc_ALWAYS_INLINE void prefetchForModify(const void *addr, VectorAbi::Avx512)
+{
+    _mm_prefetch(static_cast<char *>(const_cast<void *>(addr)), _MM_HINT_ET0);
+}
+}  // namespace Detail
 }  // namespace Vc
-#endif  // VC_COMMON_VECTORTRAITS_H_
 
-// vim: foldmethod=marker
+#endif // VC_AVX512_PREFETCHES_TCC_

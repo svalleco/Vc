@@ -36,7 +36,7 @@ namespace Vc_VERSIONED_NAMESPACE
 namespace Common
 {
 
-#if defined(Vc_IMPL_MIC)
+#if defined(Vc_IMPL_MIC) || defined(Vc_IMPL_AVX512)
 static constexpr int exclusive_hint = 0x4;
 #else
 static constexpr int exclusive_hint = 0;

@@ -169,6 +169,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define AVX    0x00800000
 #define AVX2   0x00900000
 #define MIC    0x00A00000
+#define AVX512 0x00A10000 
 
 #define XOP    0x00000001
 #define FMA4   0x00000002
@@ -277,7 +278,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #else // Vc_IMPL
 
-#  if (Vc_IMPL & IMPL_MASK) == MIC // MIC supersedes everything else
+#  if Vc_IMPL == AVX512 // SV
+#    pragma message("using AVX512")
+#    define Vc_IMPL_AVX512 1
+#  elif(Vc_IMPL & IMPL_MASK) == MIC // MIC supersedes everything else
 #    define Vc_IMPL_MIC 1
 #    ifdef __POPCNT__
 #      define Vc_IMPL_POPCNT 1
@@ -368,6 +372,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #  define Vc_USE_VEX_CODING 1
 #endif
 
+//#ifdef Vc_IMPL_AVX512
+// if we have AVX512 then we also have AVX intrinsics
+//#    define Vc_IMPL_AVX2 1
+//#    define Vc_IMPL_AVX 1
+//#endif
+
 #ifdef Vc_IMPL_AVX
 // if we have AVX then we also have all SSE intrinsics
 #    define Vc_IMPL_SSE4_2 1
@@ -377,6 +387,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #    define Vc_IMPL_SSE2 1
 #    define Vc_IMPL_SSE 1
 #endif
+
 
 #if defined(Vc_CLANG) && Vc_CLANG >= 0x30600 && Vc_CLANG < 0x30700
 #    if defined(Vc_IMPL_AVX)
@@ -388,7 +399,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #    endif
 #endif
 
-# if !defined(Vc_IMPL_Scalar) && !defined(Vc_IMPL_SSE) && !defined(Vc_IMPL_AVX) && !defined(Vc_IMPL_MIC)
+# if !defined(Vc_IMPL_Scalar) && !defined(Vc_IMPL_SSE) && !defined(Vc_IMPL_AVX) && !defined(Vc_IMPL_MIC) && !defined(Vc_IMPL_AVX512)
 #  error "No suitable Vc implementation was selected! Probably Vc_IMPL was set to an invalid value."
 # elif defined(Vc_IMPL_SSE) && !defined(Vc_IMPL_SSE2)
 #  error "SSE requested but no SSE2 support. Vc needs at least SSE2!"
@@ -404,6 +415,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef AVX
 #undef AVX2
 #undef MIC
+#undef AVX512
 
 #undef XOP
 #undef FMA4
@@ -416,7 +428,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #undef IMPL_MASK
 #undef EXT_MASK
 
-#ifdef Vc_IMPL_MIC
+#ifdef Vc_IMPL_AVX512
+#define Vc_DEFAULT_IMPL_AVX512
+#elif defined Vc_IMPL_MIC
 #define Vc_DEFAULT_IMPL_MIC
 #elif defined Vc_IMPL_AVX2
 #define Vc_DEFAULT_IMPL_AVX2
@@ -504,6 +518,8 @@ enum Implementation : std::uint_least32_t { // TODO: make enum class
     AVX2Impl,
     /// Intel Xeon Phi
     MICImpl,
+    /// Intel KNL
+    AVX512Impl,
     ImplementationMask = 0xfff
 };
 
@@ -587,6 +603,8 @@ template <unsigned int Features> struct ImplementationT {
 using CurrentImplementation = ImplementationT<
 #ifdef Vc_IMPL_Scalar
     ScalarImpl
+#elif defined(Vc_IMPL_AVX512)
+    AVX512Impl     //temp
 #elif defined(Vc_IMPL_MIC)
     MICImpl
 #elif defined(Vc_IMPL_AVX2)

@@ -50,7 +50,7 @@ namespace LoadStoreFlags
 struct StreamingFlag {};
 struct UnalignedFlag {};
 struct PrefetchFlagBase {};
-#ifdef Vc_IMPL_MIC
+#if defined Vc_IMPL_MIC || defined Vc_IMPL_AVX512
 template<size_t L1 = 8 * 64, size_t L2 = 64 * 64,
 #else
 // TODO: determine a good default for typical CPU use

@@ -36,6 +36,7 @@ struct Scalar {};
 struct Sse {};
 struct Avx {};
 struct Mic {};
+struct Avx512 {};
 template <typename T>
 using Avx1Abi = typename std::conditional<std::is_integral<T>::value, VectorAbi::Sse,
                                           VectorAbi::Avx>::type;
@@ -49,8 +50,11 @@ using Best = typename std::conditional<
             typename std::conditional<
                 CurrentImplementation::is(AVX2Impl), Avx,
                 typename std::conditional<CurrentImplementation::is(MICImpl), Mic,
-                                          void>::type>::type>::type>::type>::type;
-#ifdef Vc_IMPL_AVX2
+                                          typename std::conditional<CurrentImplementation::is(AVX512Impl), Avx512,void>::type>::type>::type>::type>::type>::type;
+#if defined Vc_IMPL_AVX512
+static_assert(std::is_same<Best<float>, Avx512>::value, "");
+static_assert(std::is_same<Best<int>, Avx512>::value, "");
+#elif defined Vc_IMPL_AVX2
 static_assert(std::is_same<Best<float>, Avx>::value, "");
 static_assert(std::is_same<Best<int>, Avx>::value, "");
 #elif defined Vc_IMPL_AVX

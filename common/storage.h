@@ -61,7 +61,7 @@ template <typename ValueType, size_t Size> struct IntrinsicType {
         typename std::conditional<std::is_same<ValueType, double>::value, __m128d,
                                   __m128>::type>::type;
 };
-#elif defined Vc_IMPL_MIC
+#elif defined Vc_IMPL_MIC || defined Vc_IMPL_AVX512
 template <typename ValueType, size_t Size> struct IntrinsicType {
     using type = typename std::conditional<
         std::is_integral<ValueType>::value, __m512i,
